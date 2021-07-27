@@ -1,0 +1,12 @@
+hosts:
+  - name: cloudera0
+    base_image: "bento/centos-7.9"
+    cpus: 4
+    memory: 12288
+    playbook: "playbook.yml"
+
+  - name: cloudera1
+    base_image: "bento/centos-7.9"
+    cpus: 4
+    memory: 12288
+    playbook: "playbook.yml"
