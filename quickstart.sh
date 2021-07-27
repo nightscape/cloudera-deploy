@@ -102,6 +102,7 @@ if [ ! "$(docker ps -q -f name=${CONTAINER_NAME})" ]; then
       -e ANSIBLE_COLLECTIONS_PATH="${ANSIBLE_COLLECTIONS_PATH}" \
       -e ANSIBLE_ROLES_PATH="/opt/cldr-runner/roles" \
       -e AWS_DEFAULT_OUTPUT="json" \
+      --mount "type=bind,source=${PWD}/examples,target=/opt/cloudera-deploy/examples" \
       --mount "type=bind,source=${HOME}/.aws,target=/home/runner/.aws" \
       --mount "type=bind,source=${HOME}/.config,target=/home/runner/.config" \
       --mount "type=bind,source=${HOME}/.ssh,target=/home/runner/.ssh" \
