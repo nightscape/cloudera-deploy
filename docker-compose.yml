@@ -1,0 +1,47 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  cloudera0:
+    container_name: cloudera0
+    networks: [cloudera]
+    image: centos/systemd
+    privileged: true
+    ports:
+      - "7180:7100"
+  cloudera1:
+    container_name: cloudera1
+    networks: [cloudera]
+    image: centos/systemd
+    privileged: true
+  cloudera-deploy:
+    container_name: cloudera-deploy
+    networks: [cloudera]
+    image: "ghcr.io/cloudera-labs/cldr-runner:base-latest"
+
+    volumes:
+      # TODO - "${PROJECT_DIR}":/runner/project
+      - ".:/opt/cloudera-deploy/"
+      - "${SSH_AUTH_SOCK}:/run/host-services/ssh-auth.sock"
+      - "${HOME}/.aws:/home/runner/.aws"
+      - "${HOME}/.config:/home/runner/.config"
+      - "${HOME}/.ssh:/home/runner/.ssh"
+      - "${HOME}/.cdp:/home/runner/.cdp"
+      - "${HOME}/.azure:/home/runner/.azure"
+      - "${HOME}/.kube:/home/runner/.kube"
+    environment:
+      - "SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
+      - "ANSIBLE_LOG_PATH=/home/runner/.config/cloudera-deploy/log/${CLDR_BUILD_VER:-latest}-$(date +%F_%H%M%S)"
+      - "ANSIBLE_INVENTORY=inventory"
+      - "ANSIBLE_CALLBACK_WHITELIST=ansible.posix.profile_tasks"
+      - "ANSIBLE_GATHERING=smart"
+      - "ANSIBLE_DEPRECATION_WARNINGS=false"
+      - "ANSIBLE_HOST_KEY_CHECKING=false"
+      - "ANSIBLE_SSH_RETRIES=10"
+      - "ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH}"
+      - "ANSIBLE_ROLES_PATH=/opt/cldr-runner/roles"
+      - "AWS_DEFAULT_OUTPUT=json"
+    command: ["/usr/bin/env", "bash"]
+
+
+networks:
+  cloudera:
+    name: cloudera

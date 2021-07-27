@@ -15,5 +15,4 @@
 # limitations under the License.
 
 use_default_cluster_definition: yes
-use_download_mirror: yes
 preload_cm_parcel_repo: yes
