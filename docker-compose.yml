@@ -18,11 +18,11 @@ services:
     privileged: true
     volumes:
       - "./examples/local/id_rsa.pub:/root/.ssh/authorized_keys"
+
   cloudera-deploy:
     container_name: cloudera-deploy
     networks: [cloudera]
     image: "ghcr.io/cloudera-labs/cldr-runner:base-latest"
-
     volumes:
       - "./examples/local/id_rsa:/root/.ssh/id_rsa"
       # TODO - "${PROJECT_DIR}":/runner/project
@@ -37,16 +37,27 @@ services:
     environment:
       SSH_AUTH_SOCK: "/run/host-services/ssh-auth.sock"
       ANSIBLE_LOG_PATH: "/home/runner/.config/cloudera-deploy/log/${CLDR_BUILD_VER:-latest}-$(date +%F_%H%M%S)"
+      STRANGE_BUG: "$WHERE_IT_DOESNT_WORK_WITHOUT_DOLLAR"
       ANSIBLE_INVENTORY: "inventory"
       ANSIBLE_CALLBACK_WHITELIST: "ansible.posix.profile_tasks"
       ANSIBLE_GATHERING: "smart"
       ANSIBLE_DEPRECATION_WARNINGS: "false"
       ANSIBLE_HOST_KEY_CHECKING: "false"
       ANSIBLE_SSH_RETRIES: "10"
-      ANSIBLE_COLLECTIONS_PATH: "$ANSIBLE_COLLECTIONS_PATH"
+      ANSIBLE_COLLECTIONS_PATH: "/opt/cldr-runner/collections"
       ANSIBLE_ROLES_PATH: "/opt/cldr-runner/roles"
       AWS_DEFAULT_OUTPUT: "json"
-    command: ["/usr/bin/env", "bash"]
+    command: ["/usr/local/bin/ansible-playbook", "/opt/cloudera-deploy/main.yml", "-e", "definition_path=examples/local", "-t", "run,default_cluster", "-vv"]
+
+  parcel-repo:
+    container_name: parcel-repo
+    networks: [cloudera]
+    image: joseluisq/static-web-server:latest
+    volumes:
+      - "./repo:/repo"
+    environment:
+      SERVER_ROOT: "/repo"
+      SERVER_LOG_LEVEL: "debug"
 
 
 networks:
