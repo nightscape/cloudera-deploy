@@ -1,23 +1,25 @@
-version: "3.9"  # optional since v1.27.0
+version: "3.9"
 services:
-  cloudera0:
-    container_name: cloudera0
-    networks: [cloudera]
-    #image: centos/systemd
-    build: .
-    privileged: true
-    ports:
-      - "7180:7100"
-    volumes:
-      - "./examples/local/id_rsa.pub:/root/.ssh/authorized_keys"
-  cloudera1:
+  cloudera1: &cloudera1
     container_name: cloudera1
     networks: [cloudera]
-    #image: centos/systemd
     build: .
     privileged: true
     volumes:
       - "./examples/local/id_rsa.pub:/root/.ssh/authorized_keys"
+
+  cloudera0:
+    <<: *cloudera1
+    container_name: cloudera0
+    ports:
+      - "7180:7100"
+
+  parcel-repo:
+    <<: *cloudera1
+    container_name: parcel-repo
+    volumes:
+      - "./examples/local/id_rsa.pub:/root/.ssh/authorized_keys"
+      - "./repo:/var/www/html"
 
   cloudera-deploy:
     container_name: cloudera-deploy
@@ -25,7 +27,6 @@ services:
     image: "ghcr.io/cloudera-labs/cldr-runner:base-latest"
     volumes:
       - "./examples/local/id_rsa:/root/.ssh/id_rsa"
-      # TODO - "${PROJECT_DIR}":/runner/project
       - ".:/opt/cloudera-deploy/"
       - "${SSH_AUTH_SOCK}:/run/host-services/ssh-auth.sock"
       - "${HOME}/.aws:/home/runner/.aws"
@@ -48,16 +49,10 @@ services:
       ANSIBLE_ROLES_PATH: "/opt/cldr-runner/roles"
       AWS_DEFAULT_OUTPUT: "json"
     command: ["/usr/local/bin/ansible-playbook", "/opt/cloudera-deploy/main.yml", "-e", "definition_path=examples/local", "-t", "run,default_cluster"]
-
-  parcel-repo:
-    container_name: parcel-repo
-    networks: [cloudera]
-    build: .
-    privileged: true
-    volumes:
-      - "./examples/local/id_rsa.pub:/root/.ssh/authorized_keys"
-      - "./repo:/var/www/html"
-
+    depends_on:
+      - cloudera0
+      - cloudera1
+      - parcel-repo
 
 networks:
   cloudera:
