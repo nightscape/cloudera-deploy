@@ -13,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#cloudera_archive_base_url: https://parcel-repo/cloudera-repos/cm7
+cloudera_manager_version: 7.3.1
+cloudera_manager_repo_url: http://parcel-repo/cloudera-repos/cm7/{{cloudera_manager_version}}/
 use_default_cluster_definition: yes
 preload_cm_parcel_repo: yes

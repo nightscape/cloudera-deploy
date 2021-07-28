@@ -52,12 +52,11 @@ services:
   parcel-repo:
     container_name: parcel-repo
     networks: [cloudera]
-    image: joseluisq/static-web-server:latest
+    build: .
+    privileged: true
     volumes:
-      - "./repo:/repo"
-    environment:
-      SERVER_ROOT: "/repo"
-      SERVER_LOG_LEVEL: "debug"
+      - "./examples/local/id_rsa.pub:/root/.ssh/authorized_keys"
+      - "./repo:/var/www/html"
 
 
 networks:
