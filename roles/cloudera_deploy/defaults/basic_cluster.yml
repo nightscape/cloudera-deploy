@@ -20,7 +20,7 @@ clusters:
   - name: Basic Cluster
     services: [HDFS, YARN, ZOOKEEPER]
     repositories:
-      - http://parcel-repo/parcels/
+      - https://archive.cloudera.com/cdh7/7.1.6.0/parcels/
     configs:
       HDFS:
         DATANODE:
