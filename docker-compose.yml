@@ -47,7 +47,7 @@ services:
       ANSIBLE_COLLECTIONS_PATH: "/opt/cldr-runner/collections"
       ANSIBLE_ROLES_PATH: "/opt/cldr-runner/roles"
       AWS_DEFAULT_OUTPUT: "json"
-    command: ["/usr/local/bin/ansible-playbook", "/opt/cloudera-deploy/main.yml", "-e", "definition_path=examples/local", "-t", "run,default_cluster", "-vv"]
+    command: ["/usr/local/bin/ansible-playbook", "/opt/cloudera-deploy/main.yml", "-e", "definition_path=examples/local", "-t", "run,default_cluster"]
 
   parcel-repo:
     container_name: parcel-repo
